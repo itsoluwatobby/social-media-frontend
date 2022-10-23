@@ -14,7 +14,7 @@ import { FaTimes } from 'react-icons/fa';
 
 const Posts = ({post, error}) => {
    const [user, setUser] = useState({});
-   const {loggedInUser, setNewPosts, handleFollow, followed} = useContextAuth();
+   const {loggedInUser, setNewPosts, handleFollow, setFollowed, followed} = useContextAuth();
    const [like, setLike] = useState(post.likes?.length);
    const [isLiked, setIsLiked] = useState(post?.likes.includes(loggedInUser?._id));
    const [errors, setErrors] = useState(false);
@@ -59,10 +59,13 @@ const Posts = ({post, error}) => {
          catch(error){
             console.log(error)
          }
+         finally{
+            setFollowed(loggedInUser?.following.includes(post?.userId))
+         }
       }
       getUsers()
 
-   }, [post?.userId, isLiked])
+   }, [post?.userId, isLiked, followed])
 
    let isError = <h2>No post to display</h2>
 
@@ -122,13 +125,11 @@ const Posts = ({post, error}) => {
                               onClick={() => handleFollow(post?.userId)}>
                               {followed ? 
                                  <span 
-                                    style={
-                                    {display:'flex', alignItems:'center', gap:'0.2rem'}}>UnFollow <FaMinus />
+                                    style={followButtonStyle}>UnFollow <FaMinus />
                                  </span> 
                                     : 
                                  <span 
-                                    style={
-                                       {display:'flex', alignItems:'center', gap:'0.2rem'}}>Follow <FaPlus />
+                                    style={followButtonStyle}>Follow <FaPlus />
                                  </span> 
                               }
                            </button>
@@ -413,3 +414,7 @@ const Container = styled.div`
       }
    }
 `
+
+const followButtonStyle = {
+   display:'flex', alignItems:'center', gap:'0.2rem'
+}
