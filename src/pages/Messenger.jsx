@@ -81,9 +81,8 @@ const Messenger = () => {
             <div className="chatMenuWrapper">
                <input type="text" placeholder='search for friends' className="chatMenuInput" />
                {conversations.map(conversation => (
-                     <div onClick={() => setCurrentChat(conversation)}>
-                        <Conversation 
-                           key={conversation._id} 
+                     <div key={conversation._id} onClick={() => setCurrentChat(conversation)}>
+                        <Conversation  
                            conversation={conversation}
                            loggedInUser={loggedInUser}   
                         />

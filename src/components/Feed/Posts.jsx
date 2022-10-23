@@ -1,5 +1,5 @@
 import { MoreVert } from '@mui/icons-material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import styled from 'styled-components';
 import {BsHeartFill} from 'react-icons/bs'
@@ -59,13 +59,14 @@ const Posts = ({post, error}) => {
          catch(error){
             console.log(error)
          }
-         finally{
-            setFollowed(loggedInUser?.following.includes(post?.userId))
-         }
       }
       getUsers()
 
-   }, [post?.userId, isLiked, followed])
+   }, [post?.userId, isLiked])
+
+   useCallback(() => {
+      setFollowed(loggedInUser?.following.includes(user?._id))
+   }, [followed, open])
 
    let isError = <h2>No post to display</h2>
 
@@ -120,9 +121,9 @@ const Posts = ({post, error}) => {
                   <button 
                      className={confirmDelete ? 'none' : ''}
                      onClick={() => setConfirmDelete(prev => !prev)}>Delete</button> : 
-                        post?.userId !== loggedInUser?._id && (
+                        user?._id !== loggedInUser?._id && (
                            <button className='rightFollowButton' 
-                              onClick={() => handleFollow(post?.userId)}>
+                              onClick={() => handleFollow(user?._id)}>
                               {followed ? 
                                  <span 
                                     style={followButtonStyle}>UnFollow <FaMinus />

@@ -101,6 +101,7 @@ const Register = () => {
                   type="username" 
                   name="username"
                   required
+                  autoComplete='off'
                   minLength={4}
                   placeholder='Username' 
                   className="loginInput" 
@@ -121,6 +122,7 @@ const Register = () => {
                   name="email"
                   minLength={5} 
                   required
+                  autoComplete='off'
                   className="loginInput" 
                   onChange={handleChange}   
                />
@@ -133,6 +135,7 @@ const Register = () => {
                      placeholder='Password' 
                      name="password"
                      required
+                     autoComplete='off'
                      className="loginInput" 
                      onChange={handleChange}   
                   />
@@ -163,6 +166,7 @@ const Register = () => {
                      placeholder='Confirm Password' 
                      name='confirmPassword' 
                      required
+                     autoComplete='off'
                      className="loginInput" 
                      onChange={handleChange}   
                   />
@@ -231,14 +235,15 @@ const Container = styled.div`
 
    .green{
       color: green;
-      font-size: 24px;
+      font-size: 22px;
       padding: 0;
-      margin-bottom: 0;
+      margin: 0 0 -10px 0;
    }
 
    .red{
       color: red;
-      font-size: 28px;
+      font-size: 24px;
+      margin: -10px 0;
    }
 
    .loginWrapper{
@@ -268,23 +273,19 @@ const Container = styled.div`
       }
 
       .loginRight{
-         padding: 10px 0;
+         padding: 10px;
          position: relative;
 
          .loginBox{
-            height: 450px;
+            // height: 450px;
             padding: 20px;
             background-color: #ffffff;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
+            gap: 0.6rem;
             box-shadow: -2px 4px 16px rgba(0,0,0,0.2);
             justify-content: space-between;
-
-            @media (min-width: 800px){
-               height: 500px;
-               padding: 0.2rem 0;
-            }
 
             .loginInput{
                min-height: 50px;
@@ -388,6 +389,16 @@ const Container = styled.div`
                }
             }
          }
+
+         @media (min-width: 768px){
+
+            .loginBox{
+
+               .loginInput{
+
+               }
+            }
+         }
       }
 
       @media (max-width: 768px){
@@ -411,6 +422,6 @@ const errorStyle = {
 }
 
 const passStyle = {
-   width: '100%', margin: '0', padding: '2px 5px 2px 5px', backgroundColor: 'black', borderRadius: '10px', color: 'white', marginBottom: '5px', textTransform: 'lowercase', fontSize: '14px', listStyle: 'none', display: 'flex', flexDirection: 'column', textAlign: 'left'
+   width: '100%', margin: '-8px 0 -3px 0', padding: '2px 5px 2px 5px', backgroundColor: 'black', borderRadius: '10px', color: 'white', textTransform: 'lowercase', fontSize: '14px', display: 'flex', flexDirection: 'column', textAlign: 'left'
 }
 
