@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {BsGiftFill} from 'react-icons/bs'
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchUsers } from '../../api/axiosFetch';
@@ -8,10 +8,10 @@ import { users } from '../../data';
 import useContextAuth from '../UserContext/useContextAuth';
 import OnlineUsers from './OnlineUsers';
 
-const Rightbar = ({user}) => {
+const Rightbar = ({ user }) => {
   const [friends, setFriends] = useState([]);
   const [error, setError] = useState('');
-  const {loggedInUser, setReveal, setSearch, followed, reload, setFollowed, handleFollow} = useContextAuth();
+  const {loggedInUser, setReveal, setSearch, followed, reload, setFollowed, handleFollow, rightBar, setRightBar} = useContextAuth();
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
@@ -53,7 +53,13 @@ const Rightbar = ({user}) => {
   let fetching = <p>Please wait ...</p>
 
   let HomeContent = (
-      <>
+      <div className={`container ${rightBar ? 'none' : ''}`}>
+        <div className="navButton">
+          <FaTimes 
+            className='cancel' 
+            title='rightbar'
+            onClick={() => setRightBar(prev => !prev)}/>
+        </div>
         <div className="birthdayContainer">
           <BsGiftFill className='gift'/>
           <span className="birthdayText"><b style={{cursor: 'pointer'}}>Pola Foster</b> and <b style={{cursor: 'pointer'}}>3 other friends</b> have a birthday today.</span>
@@ -66,7 +72,7 @@ const Rightbar = ({user}) => {
             ))
           }
         </ul>
-      </>
+      </div>
   )
   
   const relationship = (user?.relationship < 1 || user?.relationship === 1) ? <p>No Status</p> : user?.relationship === 2 ? <p>Married</p> : <p>Divorced</p>
@@ -147,6 +153,10 @@ export default Rightbar;
 const Container = styled.div`
   flex: 3.5;
 
+  .navButton{
+    display: none;
+  }
+
   .rightFollowButton{
     right: 8px;
     top: 22px;
@@ -180,7 +190,7 @@ const Container = styled.div`
   }
 
   .rightbarWrapper{
-    padding: 20px 20px 0 0;
+    padding: 20px 20px 20px 10px;
 
     .birthdayContainer{
       display: flex;
@@ -265,6 +275,81 @@ const Container = styled.div`
 
         }
       }
+    }
+  }
+
+  @media (max-width: 908px){
+    overflow-y: scroll;
+
+    .container.none{
+      display: none;
+    }
+
+    .container{
+      position: fixed;
+      top: 50px;
+      right: -30px;
+      width: 60%;
+      padding: 20px 20px 20px 10px;
+      z-index: 999;
+      background-color: white;
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.3);
+      overflow-y: scroll;
+      
+      .navButton{
+        display: block;
+
+        .cancel{
+          font-size: 20px;
+          color: rgba(0,0,0,0.2);
+          background-color: rgba(0,0,0,0.15);
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.2s ease-in;
+
+          &:hover{
+            color: rgba(0,0,0,0.3);
+            background-color: rgba(0,0,0,0.3);
+          }
+        }
+      }
+
+      .birthdayContainer{
+        flex-direction: column;
+
+        .gift{
+          font-size: 56px;
+        }
+
+        .birthdayText{
+          font-size: 18px;
+
+        }
+      }
+
+      .rightbarAd{
+        
+      }
+
+      .rightbarTitle{
+      
+      }
+
+      .rightbarFriendList{
+      
+      }
+    }
+
+    &::-webkit-scrollbar{
+        width: 1px;
+    }
+
+    &::-webkit-scrollbar-track{
+        background-color: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background-color: rgb(179, 179, 179);
     }
   }
 `

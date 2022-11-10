@@ -4,16 +4,17 @@ import { Search, Person, Chat, Notifications } from '@mui/icons-material'
 import {Link} from 'react-router-dom';
 import { CgProfile } from 'react-icons/cg';
 import useContextAuth from '../UserContext/useContextAuth';
-import { FaArrowDown } from 'react-icons/fa';
+import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 
 const Topbar = () => {
-   //const [search, setSearch] = useState('');
    const [show, setShow] = useState(false);
-   const {loggedInUser, reveal, setReveal, handleLogout, search, setSearch, searchResults} = useContextAuth();
-   
+   const {pathname} = useLocation();
+   const {loggedInUser, reveal, setReveal, setRightBar, handleLogout, search, setSearch, searchResults, setLeftBar} = useContextAuth();
+   //console.log(pathname.split('/')[1])
   
    let optionContainer = (
-      <div style={option}>
+      <div style={option} className='rights'>
          <div style={optionsList}>
             <p style={links} className='hovers'><Link to='/' className='links'>Home</Link></p>
             <p style={links} className='hovers'><Link className='links'>Mode</Link></p>
@@ -55,6 +56,14 @@ const Topbar = () => {
             setReveal(false)
             setSearch('')
             }}>
+            <button 
+               title='display left bar' 
+               className='burger' 
+               onClick={() => {
+                  setLeftBar(prev => !prev)
+                  setRightBar(true)
+               }}   
+            >&#9776;</button>
             <Link className='links' to='/'>
                <span className="logo">Oluwatobby</span>
             </Link>
@@ -86,7 +95,13 @@ const Topbar = () => {
                   <span className="topbarLink">Timeline</span>
                </Link>
             </div>
-            <div className="topbarIcons">
+            <div className={`topbarIcons ${show && 'none'}`} display={pathname.split('/')[1] === 'messenger' ? true : false}>
+               <FaArrowRight onClick={() => {
+                  setRightBar(prev => !prev)
+                  setLeftBar(false)
+               }} 
+               className='arrow-right'
+               />
                <div className="topbarIconItem">
                   <Person />
                   <span className="counterBadge">1</span>
@@ -165,6 +180,10 @@ const Container = styled.div`
 
    .topbarLeft{
       flex: 3;
+
+      .burger{
+         display: none;
+      }
       
       .logo{
          font-size: 24px;
@@ -297,6 +316,10 @@ const Container = styled.div`
       .topbarIcons{
          display: flex;
 
+         .arrow-right{
+            display: none;
+         }
+
          .topbarIconItem{
             margin-right: 15px;
             cursor: pointer;
@@ -328,10 +351,117 @@ const Container = styled.div`
          cursor: pointer;
       }
    }
+
+   @media (max-width: 908px){
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      
+      .topbarLeft{
+         flex: 3;
+         display: flex;
+         align-items: center;
+         margin-left: 10px; 
+
+         .logo{
+            
+         }
+
+         .burger{
+            display: block;
+            color: rgba(0,0,0,0.6);
+            font-size: 32px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+         }
+      }
+
+      .topbarCenter{
+         flex: 5;
+         margin-left: 1rem;
+
+         .searchBar{
+
+
+            .search-icon{
+
+            }
+
+            .search-input{
+
+            }
+
+            .searchContainer{
+               z-index: 10;
+
+               .searchContent{
+
+               }
+            }
+         }
+      }
+
+      .topbarRight{
+         flex: 2;
+
+         position: relative;
+
+         .topbarLinks{
+            display: none;
+
+            .topbarLink{
+
+            }
+         }
+
+         .topbarIcons{
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            top: 40px;
+            right: 0;
+            gap: 5px;
+            padding: 12px 0 5px 10px;
+            background-color: rgba(24,119,242,0.9);
+            border-radius: 0 0 5px 5px;
+
+            .arrow-right{
+               display: block;
+               text-align: center;
+               top: 50px;
+               right: 5px;
+               font-size: 22px;
+               color: white;
+               cursor: pointer;
+               transition: all 0.3s ease-in;
+            
+               &:hover{
+               background-color: rgba(0,0,0,0.5);
+               color: lightgray;
+               }
+            }
+
+            .topbarIconItem{
+
+            }
+         }
+
+         .none{
+            display: none;
+         }
+
+         .topbarImg{
+
+         }
+      }
+   }
 `
 
 const option = {
-   height: '130px', width: '100px', borderRadius: '0 0 5px 5px', backgroundColor: 'rgba(24,119,242,0.65)', position: 'absolute', top: '40px', right: '5px',
+   height: '130px', width: '100px', borderRadius: '0 0 5px 5px', backgroundColor: 'rgba(24,119,242,0.8)', position: 'absolute', top: '40px', right: '-28px', zIndex: '999'
 }
 //1877f2
 const optionsList = {

@@ -5,6 +5,8 @@ import Register from './pages/Register';
 import Messenger from './pages/Messenger';
 import { Routes, Route } from 'react-router-dom';
 import ProtectRoute from './components/ProtectRoute';
+import ForgetPassword from './pages/ForgetPassword';
+import MissingPage from './pages/MissingPage';
 
 function App() {
 
@@ -15,9 +17,11 @@ function App() {
           <Route index element={<Home />} />
           <Route path='/profile/:username' element={<Profile />} />
           <Route path='/messenger' element={<Messenger />} />
+          <Route path='*' element={<MissingPage />} />
         </Route>
         <Route path='login' element={<Login />} />
         <Route path='register' element={<Register />} />
+        <Route path='forgotPassword' element={<ForgetPassword />} />
       </Routes>
     </div>
   )

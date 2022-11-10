@@ -1,5 +1,5 @@
 import { MoreVert } from '@mui/icons-material';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import styled from 'styled-components';
 import {BsHeartFill} from 'react-icons/bs'
@@ -11,31 +11,20 @@ import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import useContextAuth from '../../UserContext/useContextAuth';
 import { FaTimes } from 'react-icons/fa';
-
+//setFollowed, followed
 const Posts = ({post, error}) => {
    const [user, setUser] = useState({});
-   const {loggedInUser, setNewPosts, handleFollow, setFollowed, followed} = useContextAuth();
+   const {
+      loggedInUser, setNewPosts, 
+      handleFollow, setGetComment, 
+      getComment} = useContextAuth();
    const [like, setLike] = useState(post.likes?.length);
    const [isLiked, setIsLiked] = useState(post?.likes.includes(loggedInUser?._id));
    const [errors, setErrors] = useState(false);
    const [open, setOpen] = useState(false);
    const [confirmDelete, setConfirmDelete] = useState(false);
    const [displayComments, setDisplayComments] = useState(false);
-   const [getComment, setGetComment] = useState([])
-
-
-   useEffect(() => {
-      const getComments = async() => {
-         try{
-            const response = await getPosts.get(`/comments/${post?._id}`)
-            setGetComment(response.data)
-         }
-         catch(error){
-         }
-      }
-      getComments()
-
-   }, [post, loggedInUser])
+   const commentLengthRef = useRef([]);
 
    const handleLikes = async() => {
 
@@ -50,7 +39,6 @@ const Posts = ({post, error}) => {
    }
 
    useEffect(() => {
-      
       const getUsers = async() => {
         try{ 
             const res = await fetchUsers(`/query?userId=${post?.userId}`)
@@ -64,10 +52,6 @@ const Posts = ({post, error}) => {
 
    }, [post?.userId, isLiked])
 
-   useCallback(() => {
-      setFollowed(loggedInUser?.following.includes(user?._id))
-   }, [followed, open])
-
    let isError = <h2>No post to display</h2>
 
    const deletePost = async(postId) => {
@@ -79,6 +63,14 @@ const Posts = ({post, error}) => {
          setErrors(error)
       }
    }
+
+   useEffect(() => {
+      const getLength = () => {
+
+      }
+      getLength()
+
+   }, [])
 
    let deleteContainer = (
       <div className="deleteContainer">
@@ -120,22 +112,22 @@ const Posts = ({post, error}) => {
                   loggedInUser?._id === post?.userId ? 
                   <button 
                      className={confirmDelete ? 'none' : ''}
-                     onClick={() => setConfirmDelete(prev => !prev)}>Delete</button> : 
-                        user?._id !== loggedInUser?._id && (
-                           <button className='rightFollowButton' 
-                              onClick={() => handleFollow(user?._id)}>
-                              {followed ? 
-                                 <span 
-                                    style={followButtonStyle}>UnFollow <FaMinus />
-                                 </span> 
-                                    : 
-                                 <span 
-                                    style={followButtonStyle}>Follow <FaPlus />
-                                 </span> 
-                              }
-                           </button>
-                        )
-                     )
+                     onClick={() => setConfirmDelete(prev => !prev)}>Delete</button> : null )
+                     //    user?._id !== loggedInUser?._id && (
+                     //       <button className='rightFollowButton' 
+                     //          onClick={() => handleFollow(user?._id)}>
+                     //          {followed?.following.includes(post.userId) ? 
+                     //             <span 
+                     //                style={followButtonStyle}>UnFollow <FaMinus />
+                     //             </span> 
+                     //                : 
+                     //             <span 
+                     //                style={followButtonStyle}>Follow <FaPlus />
+                     //             </span> 
+                     //          }
+                     //       </button>
+                     //    )
+                     // )
                }
                {confirmDelete && deleteContainer}
             </div>
@@ -170,14 +162,23 @@ const Posts = ({post, error}) => {
                </span>
             </div>
             <div className="postBottomRight">
-               <span className="postCommentText" 
-                  onClick={
-                     () => setDisplayComments(prev => !prev)}>
-                  {
-                  (getComment?.postId === post?._id) && getComment?.length || 'no'} {
-                     getComment?.length === 1 ? 'comment' : 'comments'
-                  }
-               </span>
+              {getComment?.length ? getComment?.postId === post?._id &&(
+                  <span className="postCommentText" 
+                     onClick={
+                        () => setDisplayComments(prev => !prev)}>
+                     {getComment?.length === 1 ? 
+                        getComment?.length + ' comment' : 
+                           getComment?.length + ' comments'
+                     }
+                  </span>
+                  ) : (
+                  <span className="postCommentText" 
+                     onClick={
+                     () => setDisplayComments(prev => !prev)
+                     }>no comment
+                  </span>
+                  )
+               }
             </div>
          </div>
          {displayComments && <Comments post={post}/>}

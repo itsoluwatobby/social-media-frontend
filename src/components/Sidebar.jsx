@@ -8,13 +8,13 @@ import CloseFriends from './closeFriends/CloseFriends';
 import useContextAuth from '../UserContext/useContextAuth';
 
 const Sidebar = () => {
-   const {setReveal, setSearch} = useContextAuth()
+   const {setReveal, setSearch, leftBar} = useContextAuth()
 
   return (
    <Container onClick={() => {
             setReveal(false)
             setSearch('')
-            }}>
+            }} show={leftBar}>
       <div className="sidebarWrapper">
          <ul className="sidebarList">
             <li className="sidebarListItem">
@@ -81,7 +81,6 @@ const Container = styled.div`
 
    .sidebarWrapper{
       padding: 20px;
-      //background-color: yellowgreen;
 
       .sidebarList{
          padding: 0;
@@ -127,5 +126,18 @@ const Container = styled.div`
    }
    &::-webkit-scrollbar-thumb{
       background-color: rgb(179, 179, 179);
+   }
+
+   @media (max-width: 908px){
+      position: absolute;
+      display: ${props => props.show ? '' : 'none'};
+      left: -0.5rem;
+      top: -0.2rem;
+      z-index: 10;
+      background-color: white;
+
+      .sidebarWrapper{
+         padding-right: 5px;
+      }
    }
 `

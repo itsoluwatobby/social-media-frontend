@@ -1,56 +1,27 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { authUsers } from '../../api/axiosFetch';
-import Spinner from '../assets/Spinner';
 
-const Login = () => {
-   const [show, setShow] = useState(false);
-   const inputRef = useRef();
+const ForgetPassword = () => {
+   const [email, setEmail] = useState('');
+   const emailRef = useRef();
    const navigate = useNavigate();
-   const [error, setError] = useState(''); 
-   const [loading, setLoading] = useState(false);
-   const [username, setUsername] = useState('');
-   const [password, setPassword] = useState('');
+   const [error, setError] = useState('');
+   const [sentLink, setSentLink] = useState(false)
 
    useEffect(() => {
-      inputRef.current.focus()
-   }, [])
+      emailRef.current.focus()
+      setSentLink(false)
+   }, []);
 
-   const handleLogin = async(e) => {
+   const handleForgetPassword = async(e) => {
       e.preventDefault()
-      setLoading(true)
-      try{ 
-         const response = await authUsers.post('/login', 
-            {username, password},
-            {
-               headers: {
-               'Content-Type': 'application/json'
-               },
-               withCredentials: true
-            }
-         )
-         JSON.stringify(localStorage.setItem('isLoggedIn', JSON.stringify(response?.data)))
-         navigate('/', {replace: true})
-         setUsername('')
-         setPassword('')
-      }
-      catch(error){
-         setLoading(false)
-         !error.response && setError('No Server Response')
-         error.response?.status === 403 && setError('Bad Credentials')
-         error.response?.status === 400 && setError('Invalid Input')
-      }
-      finally{
-         setLoading(false)
-      }
-      await setTimeout(() => {
-         setError(false)
-      }, 2000);
+      console.log(email)
+      setEmail('')
+      setSentLink(true)
    }
 
-   const canSaveLogIn = Boolean(username) && Boolean(password)
+   const canSubmit = Boolean(email.includes('@') && email.includes('.'))
 
    let errorContent = ( 
       <div style={errorStyle}>
@@ -60,71 +31,45 @@ const Login = () => {
       </div>     
    )
 
-   let loginContent = (
+  return (
     <Container>
       <div className="loginWrapper">
          <div className="loginLeft">
             <h3 className="loginLogo">Oluwatobby</h3>
             <span className="loginDesc">Connect with friends and the world around you on Oluwatobby</span>
          </div>
-         <form onSubmit={handleLogin} className="loginRight">
+         <form onSubmit={handleForgetPassword} className="loginRight">
             <div className="loginBox">
                {error && errorContent}
                <input 
-                  type="text" 
-                  ref={inputRef}
-                  placeholder='Username'
+                  type="email" 
+                  ref={emailRef}
+                  placeholder='Enter email'
                   autoComplete='off'
-                  value= {username}
+                  value= {email}
                   className="loginInput" 
-                  onChange={e => setUsername(e.target.value)}   
+                  onChange={e => setEmail(e.target.value)}   
                />
-               <div className="pass">
-                  <input 
-                     type={show ? "text" : "password"} 
-                     placeholder='Password' 
-                     value= {password}
-                     autoComplete='off'
-                     className="loginInput" 
-                     onChange={e => setPassword(e.target.value)}   
-                  />
-                  {show ? 
-                     <AiFillEyeInvisible 
-                        onClick={
-                           () => setShow(prev => !prev)}
-                           className='eyePass'
-                     /> : 
-                     <AiFillEye 
-                        onClick={
-                           () => setShow(prev => !prev)}
-                           className='eyePass'
-                     />
-                  }
-               </div>
                <button 
                   type="submit" 
-                  className={!canSaveLogIn ? 'none' : 'loginButton'} 
-                     disabled={!canSaveLogIn}
-                     >Sign in</button>
-                     <Link className="loginForgot" to='/forgotPassword'>
-                        <span>Forgot Password?</span>
-                     </Link>
+                  className={!canSubmit ? 'none' : 'loginButton'} 
+                     disabled={!canSubmit}
+                     >Reset Password</button>
+               {sentLink && <span className="loginForgot">Password reset Link has been sent to your email</span>}
                <button 
                   type='button' 
                   className="loginRegisterButton"
                   >
-                     <Link className='links' to='/register'>Create a New Account</Link>
+                     <Link className='links' to='/login'>Login into your Account</Link>
                </button>
             </div>
          </form>
       </div>
     </Container>
   );
-
-  return loading ? <Spinner /> : loginContent
 }
 
-export default Login;
+export default ForgetPassword;
 
 const Container = styled.div`
    width: 100%;
@@ -164,11 +109,11 @@ const Container = styled.div`
          position: relative;
 
          .loginBox{
-            height: 300px;
             padding: 20px;
             background-color: #ffffff;
             border-radius: 10px;
             display: flex;
+            gap: 1rem;
             flex-direction: column;
             box-shadow: -2px 4px 16px rgba(0,0,0,0.2);
             justify-content: space-between;
@@ -185,31 +130,8 @@ const Container = styled.div`
                }
             }
 
-            .pass{
-               display: flex;
-               align-items: center;
-               border-radius: 10px;
-               border: 1px solid gray;
-               position: relative;
-
-               .eyePass{
-                  position: absolute;
-                  right: 5px;
-                  font-size: 28px;
-                  cursor: pointer;
-                  color: rgba(0,0,0,0.8);
-               }
-
-               .loginInput{
-                  border: none;
-                  border-radius: 10px;
-                  flex: 2;
-                  box-sizing: object-fit;
-               }
-            }
-
             .loginButton{
-               height: 50px;
+               height: 45px;
                border-radius: 10px;
                border: none;
                background-color: #1775ee;
@@ -233,21 +155,13 @@ const Container = styled.div`
                text-align: center;
                color: #1775ee;
                cursor: pointer;
-               text-decoration: none;
-               font-weight: 500;
-               display: inline;
-               transition: opacity 0.24s ease-in;
-
-               &:hover{
-                  opacity: 0.8;
-               }
             }
 
             .loginRegisterButton{
-               padding: 5px 10px;
-               width: 70%;
+               width: 80%;
                margin: 0 auto;
                border-radius: 10px;
+               padding: 5px;
                border: none;
                background-color: #42b72a;
                color: white;

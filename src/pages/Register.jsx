@@ -7,6 +7,7 @@ import { authUsers } from "../../api/axiosFetch";
 
 const USER_REGEX = /^[A-Za-z][A-Za-z0-9_]{4,25}$/
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{7,24}$/
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
 const Register = () => {
    const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Register = () => {
    const [loading, setLoading] = useState(false);
    const [validUsername, setValidUsername] = useState(false);
    const [validPassword, setValidPassword] = useState(false);
+   const [validEmail, setValidEmail] = useState(false);
    const [match, setMatch] = useState(false);
    const [success, setSuccess] = useState(false);
    const [register, setRegister] = useState({
@@ -33,12 +35,17 @@ const Register = () => {
    }
 
    useEffect(() => {
-      const result = USER_REGEX.test(username)
+      const result = USER_REGEX.test(username);
       setValidUsername(result)
    }, [username])
 
    useEffect(() => {
-      const validPass = PASSWORD_REGEX.test(password)
+      const result = EMAIL_REGEX.test(email);
+      setValidEmail(result)
+   }, [email])
+
+   useEffect(() => {
+      const validPass = PASSWORD_REGEX.test(password);
       setValidPassword(validPass)
       const match = password === confirmPassword;
       setMatch(match)
@@ -50,7 +57,8 @@ const Register = () => {
       try{
          const name = USER_REGEX.test(username)
          const pass = PASSWORD_REGEX.test(password)
-         if(name && pass){
+         const email = email.includes('@')
+         if(name && pass && email){
             const response = await authUsers.post('/register', 
             {username, email, password})
             setSuccess(true)
@@ -115,7 +123,7 @@ const Register = () => {
                      </span>
                   </p>
                }
-               {!email ? '' : validUsername ? <FaCheck className='green'/> : <FaTimes className='red'/> }
+               {!email ? '' : validEmail ? <FaCheck className='green'/> : <FaTimes className='red'/> }
                <input 
                   type="email" 
                   placeholder='Email'
@@ -126,6 +134,14 @@ const Register = () => {
                   className="loginInput" 
                   onChange={handleChange}   
                />
+               {!validEmail && email &&
+                  <p style={passStyle}>
+                     <FaInfoCircle />
+                     <span>
+                        email begin with a letter or number, contains at least a @ symbol, a minimum of 5 and a maximum of 25 characters.
+                     </span>
+                  </p>
+               }
                {success && successContent}
                {error && errorContent}
                {!password ? '' : validUsername && validPassword ? <FaCheck className='green'/> : <FaTimes className='red'/> }
@@ -184,21 +200,21 @@ const Register = () => {
                   }
                </div>
                {validPassword && !match && confirmPassword &&
-                  <p style={{backgroundColor: 'black', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', borderRadius: '5px', padding: '10px'}}>
+                  <p style={matchStyle}>
                      <FaInfoCircle />
                      <span>
                         password must be a match.
                      </span>
                   </p>
                }
-               {/* {!password &&
+               {!password && confirmPassword &&
                   <p style={passStyle}>
                      <FaInfoCircle />
                      <span>
-                        valid password input required first.
+                        a valid password input is required first.
                      </span>
                   </p>
-               } */}
+               }
                   <button type="submit" 
                      className={(!canSave || !match) ? 'none' : 'loginButton'} 
                      disabled={!canSave && match && validPassword && validUsername}
@@ -237,7 +253,7 @@ const Container = styled.div`
       color: green;
       font-size: 22px;
       padding: 0;
-      margin: 0 0 -10px 0;
+      margin: -5px 0 -10px 0;
    }
 
    .red{
@@ -278,7 +294,7 @@ const Container = styled.div`
 
          .loginBox{
             // height: 450px;
-            padding: 20px;
+            padding: 15px 20px;
             background-color: #ffffff;
             border-radius: 10px;
             display: flex;
@@ -423,5 +439,9 @@ const errorStyle = {
 
 const passStyle = {
    width: '100%', margin: '-8px 0 -3px 0', padding: '2px 5px 2px 5px', backgroundColor: 'black', borderRadius: '10px', color: 'white', textTransform: 'lowercase', fontSize: '14px', display: 'flex', flexDirection: 'column', textAlign: 'left'
+}
+
+const matchStyle = {
+   backgroundColor: 'black', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', borderRadius: '10px', padding: '10px', margin:'-9px 0 -5px 0'
 }
 

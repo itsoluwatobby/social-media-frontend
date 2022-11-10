@@ -6,6 +6,7 @@ import {AiOutlineSend} from 'react-icons/ai'
 import ChatOnline from '../components/ChatOnline';
 import useContextAuth from '../UserContext/useContextAuth'
 import { conversationUrl, messageUrl } from '../../api/axiosFetch';
+import {io} from 'socket.io-client';
 
 const Messenger = () => {
    const {loggedInUser} = useContextAuth();
@@ -16,6 +17,15 @@ const Messenger = () => {
    const [newMessage, setNewMessage] = useState('');
    const [currentChat, setCurrentChat] = useState({});
    const scrollRef = useRef();
+   const socket = useRef(io('ws://localhost:8990'))
+
+   useEffect(() => {
+     socket.current.emit('addUser', loggedInUser?._id)
+     socket.current.on('getUsers', users => {
+      console.log(users)
+     })
+   }, [loggedInUser])
+
 
    useEffect(() => {
       const getConversations = async() => {
@@ -237,6 +247,27 @@ const Container = styled.div`
 
          .chatOnlineWrapper{
             
+         }
+      }
+
+      @media (max-width: 908px){
+         
+         .chatMenu{
+            flex: 20%;
+
+         }
+
+         .chatBox{
+            flex: 80%;
+         }
+
+         .chatOnline{
+            position: fixed;
+            right: 0;
+            background-color: lightgray;
+            height: calc(100vh - 50px);
+            padding: 10px 5px;
+            box-shadow: 2px 4px 16px rgba(0,0,0,0.3);
          }
       }
    }

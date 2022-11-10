@@ -12,12 +12,15 @@ const UserContextProvider = ({children}) => {
    const [search, setSearch] = useState('');
    const [getUsers, setGetUsers] = useState([]);
    const [reveal, setReveal] = useState(false);
+   const [leftBar, setLeftBar] = useState(false);
    const [reload, setReload] = useState(1);
    const [followed, setFollowed] = useState(null);
+   const [rightBar, setRightBar] = useState(true);
+   const [getComment, setGetComment] = useState([]);
 
    
    useEffect(() => {
-      const getEveryUser = async() => {
+      const allUsers = async() => {
          try{
             const res = await fetchUsers()
             setGetUsers(res.data)
@@ -26,9 +29,9 @@ const UserContextProvider = ({children}) => {
             console.log(error)
          }
       }
-      getEveryUser()
+      allUsers()
       
-   }, [])
+   }, [reveal])
  
    
    useEffect(() => {
@@ -65,7 +68,7 @@ const UserContextProvider = ({children}) => {
    }
 
    const value = {
-      handleLogout, loggedInUser, newPosts, setNewPosts, searchResults, setSearchResults, search, setSearch, reveal, setReveal, followed, setFollowed, handleFollow, reload
+      handleLogout, loggedInUser, newPosts, setNewPosts, searchResults, setSearchResults, search, setSearch, reveal, setReveal, followed, setFollowed, handleFollow, reload, leftBar, setLeftBar, rightBar, setRightBar, setGetComment, getComment
    }
 
    return (

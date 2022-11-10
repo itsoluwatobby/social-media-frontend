@@ -63,4 +63,11 @@ const Container = styled.div`
       background-color: rgba(0,0,0,0.03);
     }
   }
+
+  @media (max-width: 908px){
+
+    .container{
+      
+    }
+  }
 `

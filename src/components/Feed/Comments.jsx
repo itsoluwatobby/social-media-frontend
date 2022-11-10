@@ -8,7 +8,7 @@ import { sub } from 'date-fns';
 import { FaTrash } from 'react-icons/fa';
 
 const Comments = ({post}) => {
-   const {loggedInUser, setGetComment} = useContextAuth()
+   const {loggedInUser, setGetComment, getComment} = useContextAuth()
    const [newComment, setNewComment] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
@@ -31,21 +31,21 @@ const Comments = ({post}) => {
             error.response?.status === 500 && setError('Please try again later');
          }
          finally{
-            setLoading(false)
+           setLoading(false)
          }
       }
       getComments()
 
-   }, [post?._id, loggedInUser?._id, reload])
-
+   }, [post?._id, loggedInUser?._id, reload, post])
 
    const handleComment = async(id) => {
       setLoading(true)
       if(!newComment) return
       const dateTime = sub(new Date(), {minutes: 0}).toISOString();
       const newComments = { 
-            postId: post._id, 
-            email: loggedInUser.email.split('@')[0], 
+            userId: loggedInUser?._id,
+            postId: id, 
+            email: loggedInUser?.email.split('@')[0], 
             dateTime, 
             comment: newComment
          }
@@ -99,7 +99,7 @@ const Comments = ({post}) => {
                   required
                   placeholder='comment here'
                   value={newComment}
-                  onKeyDown={(e) => e.key === 'Enter' && handleComment(post?._id)}
+                  onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleComment(post?._id)}
                   onChange={(e) => setNewComment(e.target.value)}
                />
                {canSubmit && <AiOutlineSend className='send' onClick={() => handleComment(post?._id)}/>}
@@ -115,11 +115,15 @@ const Comments = ({post}) => {
                            <span className='date'>{format(comment?.dateTime)}...</span>
                         </p>
                         <p className='body'>{comment?.comment}</p>
-                        <FaTrash 
-                           className='trash' 
-                           title='delete' 
-                           onClick={() => handleDelete(post?._id, comment?._id)}
-                        />
+                        {comment?.userId === loggedInUser?._id || post?.userId === loggedInUser?._id ?
+                              (
+                                 <FaTrash 
+                                 className='trash' 
+                                 title='delete' 
+                                 onClick={() => handleDelete(post?._id, comment?._id)}
+                                 />
+                           ) : null
+                        }
                      </div>)
                      )
                   )  :  (
@@ -149,6 +153,8 @@ const Container = styled.div`
       background-color: rgba(0,0,0,0.1);
       padding: 4px;
       width: 100%;
+      max-height: 210px;
+      overflow-y: scroll;
       border-radius: 5px;
 
       .newComment{
@@ -158,6 +164,9 @@ const Container = styled.div`
          border: none;
          border-radius: 10px;
          height: 30px;
+         position: sticky;
+         top: 0;
+         z-index: 99;
          background-color: white;
 
          .commentInput{
@@ -271,6 +280,10 @@ const Container = styled.div`
             font-size: 17px;
             margin-top: 3rem;
          }
+      }
+
+      &::-webkit-scrollbar{
+         width: 2px;
       }
    }
 `
