@@ -1,17 +1,21 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { authUsers } from '../../api/axiosFetch';
+import { authUsers } from '../api/axiosFetch';
 import Spinner from '../assets/Spinner';
+import useContextAuth from '../UserContext/useContextAuth';
 
 const Login = () => {
+   const {setUsers} = useContextAuth();
    const [show, setShow] = useState(false);
    const inputRef = useRef();
    const navigate = useNavigate();
+   const location = useLocation()
+   const from = location?.search?.from?.pathname || '/'
    const [error, setError] = useState(''); 
    const [loading, setLoading] = useState(false);
-   const [username, setUsername] = useState('');
+   const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
 
    useEffect(() => {
@@ -22,22 +26,21 @@ const Login = () => {
       e.preventDefault()
       setLoading(true)
       try{ 
-         const response = await authUsers.post('/login', 
-            {username, password},
+         const {data} = await authUsers.post('/login', 
+            {email, pwd: password},
             {
-               headers: {
-               'Content-Type': 'application/json'
-               },
+               headers: { 'Content-Type': 'application/json' },
                withCredentials: true
             }
          )
-         JSON.stringify(localStorage.setItem('isLoggedIn', JSON.stringify(response?.data)))
-         navigate('/', {replace: true})
-         setUsername('')
+         JSON.stringify(localStorage.setItem('isLoggedIn', JSON.stringify(data?.user?._id)))
+         console.log(data)
+         setUsers({userData: data?.user, accessToken: data?.accessToken})
+         navigate('/')
+         setEmail('')
          setPassword('')
       }
       catch(error){
-         setLoading(false)
          !error.response && setError('No Server Response')
          error.response?.status === 403 && setError('Bad Credentials')
          error.response?.status === 400 && setError('Invalid Input')
@@ -50,7 +53,7 @@ const Login = () => {
       }, 2000);
    }
 
-   const canSaveLogIn = Boolean(username) && Boolean(password)
+   const canSaveLogIn = Boolean(email) && Boolean(password)
 
    let errorContent = ( 
       <div style={errorStyle}>
@@ -71,13 +74,13 @@ const Login = () => {
             <div className="loginBox">
                {error && errorContent}
                <input 
-                  type="text" 
+                  type="email" 
                   ref={inputRef}
-                  placeholder='Username'
+                  placeholder='JohnDoe@gmail.com'
                   autoComplete='off'
-                  value= {username}
+                  value= {email}
                   className="loginInput" 
-                  onChange={e => setUsername(e.target.value)}   
+                  onChange={e => setEmail(e.target.value)}   
                />
                <div className="pass">
                   <input 

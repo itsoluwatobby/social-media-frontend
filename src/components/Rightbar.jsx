@@ -3,15 +3,15 @@ import {BsGiftFill} from 'react-icons/bs'
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchUsers } from '../../api/axiosFetch';
-import { users } from '../../data';
+import { fetchUsers } from '../api/axiosFetch';
+import { users as userD } from '../../data';
 import useContextAuth from '../UserContext/useContextAuth';
 import OnlineUsers from './OnlineUsers';
 
 const Rightbar = ({ user }) => {
   const [friends, setFriends] = useState([]);
   const [error, setError] = useState('');
-  const {loggedInUser, setReveal, setSearch, followed, reload, setFollowed, handleFollow, rightBar, setRightBar} = useContextAuth();
+  const {loggedInUserId, users, setReveal, setSearch, followed, reload, setFollowed, handleFollow, rightBar, setRightBar} = useContextAuth();
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
@@ -27,7 +27,7 @@ const Rightbar = ({ user }) => {
         error.response?.status === 400 && setError('You are not following anyone yet!')
         error.response?.status === 500 && setError('Please try again later');
       }finally{
-        setFollowed(loggedInUser?.following.includes(user?._id))
+        setFollowed(users?.userData?.following.includes(user?._id))
         setLoading(false)
       }
     }
@@ -67,8 +67,8 @@ const Rightbar = ({ user }) => {
           <img src="https://images.unsplash.com/photo-1519417688547-61e5d5338ab0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cG9zdHN8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60" alt="Ads" className="rightbarAd" />
           <h4 className="rightbarTitle">Online Friends</h4>
         <ul className="rightbarFriendList">
-          {users?.map(user => (
-              <OnlineUsers key={user.id} user={user}/>
+          {userD?.map(use => (
+              <OnlineUsers key={use.id} user={use}/>
             ))
           }
         </ul>
@@ -79,7 +79,7 @@ const Rightbar = ({ user }) => {
 
   let ProfileContent = (
       <>
-      {user?.username !== loggedInUser?.username && (
+      {user?._id !== users?.userData?._id && (
         <button className='rightFollowButton' 
           onClick={() => handleFollow(user?._id)}>
             {followed ? 
@@ -110,7 +110,7 @@ const Rightbar = ({ user }) => {
             <span className="rightbarInfoValue">{relationship}</span>
           </div>
         </div>
-        <h4 className="rightbarTitle">{loggedInUser?._id === user?._id ? 'Your' : user?.username} Friends</h4>
+        <h4 className="rightbarTitle">{loggedInUserId === user?._id ? 'Your' : user?.username} Friends</h4>
         {loading ? fetching 
         : (
           <div className="userFollowings">

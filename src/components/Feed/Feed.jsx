@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getPosts } from '../../../api/axiosFetch';
+import { getPosts } from '../../api/axiosFetch';
 import useContextAuth from '../../UserContext/useContextAuth';
 import Posts from './Posts';
 import Share from './Share';
 
 const Feed = ({username}) => {
-  const {loggedInUser, newPosts, setRightBar, setLeftBar, setSearch, setReveal} = useContextAuth();
+  const {loggedInUserId, users, newPosts, setRightBar, setLeftBar, setSearch, setReveal} = useContextAuth();
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async() => {
       try{
-        const {data} = username ? await getPosts(`/profile/${username}`) : await getPosts(`/timeline/${loggedInUser?._id}`)
+        const {data} = username ? await getPosts(`/profile/${username}`) : await getPosts(`/timeline/${loggedInUserId}`)
       
         setPosts(data)
       }
@@ -23,7 +23,7 @@ const Feed = ({username}) => {
     }
     fetchPosts()
 
-  }, [username, newPosts, loggedInUser?._id])
+  }, [username, newPosts, loggedInUserId])
 
   const filteredPosts = posts.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
@@ -35,7 +35,7 @@ const Feed = ({username}) => {
             setLeftBar(false)
             }}>
       <div className="feedWrapper">
-        {(!username || username === loggedInUser?.username) && <Share />}
+        {(!username || username === users?.userData?.username) && <Share />}
         {filteredPosts?.map(post => (
           <Posts key={post._id} post={post} error={error}/>
         ))}

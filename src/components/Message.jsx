@@ -4,7 +4,7 @@ import useContextAuth from '../UserContext/useContextAuth';
 import {format} from 'timeago.js'
 
 const Message = ({message, own}) => {
-   const {loggedInUser} = useContextAuth();
+   const {loggedInUserId} = useContextAuth();
    
   return (
     <Container own={own}>

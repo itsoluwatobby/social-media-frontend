@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useContextAuth from '../../UserContext/useContextAuth';
 import {AiOutlineSend} from 'react-icons/ai'
-import { getPosts } from '../../../api/axiosFetch';
+import { getPosts } from '../../api/axiosFetch';
 import {format} from 'timeago.js';
 import { sub } from 'date-fns';
 import { FaTrash } from 'react-icons/fa';
 
 const Comments = ({post}) => {
-   const {loggedInUser, setGetComment, getComment} = useContextAuth()
+   const {loggedInUserId, users, setGetComment, getComment} = useContextAuth()
    const [newComment, setNewComment] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
@@ -36,16 +36,16 @@ const Comments = ({post}) => {
       }
       getComments()
 
-   }, [post?._id, loggedInUser?._id, reload, post])
+   }, [post?._id, loggedInUserId, reload, post])
 
    const handleComment = async(id) => {
       setLoading(true)
       if(!newComment) return
       const dateTime = sub(new Date(), {minutes: 0}).toISOString();
       const newComments = { 
-            userId: loggedInUser?._id,
+            userId: loggedInUserId,
             postId: id, 
-            email: loggedInUser?.email.split('@')[0], 
+            email: users?.userData?.email.split('@')[0], 
             dateTime, 
             comment: newComment
          }
@@ -115,7 +115,7 @@ const Comments = ({post}) => {
                            <span className='date'>{format(comment?.dateTime)}...</span>
                         </p>
                         <p className='body'>{comment?.comment}</p>
-                        {comment?.userId === loggedInUser?._id || post?.userId === loggedInUser?._id ?
+                        {comment?.userId === loggedInUserId || post?.userId === loggedInUserId ?
                               (
                                  <FaTrash 
                                  className='trash' 

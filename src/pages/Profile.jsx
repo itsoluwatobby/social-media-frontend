@@ -5,21 +5,31 @@ import Rightbar from '../components/Rightbar';
 import Sidebar from '../components/Sidebar';
 import {CgProfile} from 'react-icons/cg'
 import { useLocation } from 'react-router-dom';
-import { fetchUsers } from '../../api/axiosFetch';
+import { fetchUsers } from '../api/axiosFetch';
 import useContextAuth from '../UserContext/useContextAuth';
 
 const Profile = () => {
-   const {loggedInUser, setReveal, setSearch} = useContextAuth();
+   const {loggedInUserId, setReveal, setSearch} = useContextAuth();
    const [user, setUser] = useState({});
    const location = useLocation();
    const username = location.pathname.split('/')[2];
 
    useEffect(() => {
+      const controller = new AbortController()
       const getUser = async() => {
-         const res = await fetchUsers.get(`/query?username=${username}`)
-         setUser(res.data)
+         try{
+            const res = await fetchUsers.get(`/query?username=${username}`, {
+               signal: controller.signal
+            })
+            setUser(res.data)
+         }
+         catch(error){
+            console.log(error)
+         }         
       }
       getUser()
+
+      return () => controller.abort()
    }, [username])
 
   return (

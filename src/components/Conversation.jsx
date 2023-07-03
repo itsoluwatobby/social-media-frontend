@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { fetchUsers } from '../../api/axiosFetch';
+import { fetchUsers } from '../api/axiosFetch';
 import {CgProfile} from 'react-icons/cg';
 
 const Conversation = ({ conversation, loggedInUser }) => {

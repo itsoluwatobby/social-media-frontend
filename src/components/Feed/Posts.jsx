@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {BsHeartFill} from 'react-icons/bs'
 import {AiFillLike} from 'react-icons/ai'
 import {CgProfile} from 'react-icons/cg'
-import { fetchUsers, getPosts } from "../../../api/axiosFetch";
+import { fetchUsers, getPosts } from "../../api/axiosFetch";
 import {format} from 'timeago.js';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
@@ -15,11 +15,11 @@ import { FaTimes } from 'react-icons/fa';
 const Posts = ({post, error}) => {
    const [user, setUser] = useState({});
    const {
-      loggedInUser, setNewPosts, 
+      loggedInUserId, setNewPosts, 
       handleFollow, setGetComment, 
       getComment} = useContextAuth();
    const [like, setLike] = useState(post.likes?.length);
-   const [isLiked, setIsLiked] = useState(post?.likes.includes(loggedInUser?._id));
+   const [isLiked, setIsLiked] = useState(post?.likes.includes(loggedInUserId));
    const [errors, setErrors] = useState(false);
    const [open, setOpen] = useState(false);
    const [confirmDelete, setConfirmDelete] = useState(false);
@@ -29,7 +29,7 @@ const Posts = ({post, error}) => {
    const handleLikes = async() => {
 
       try{
-         const res = await getPosts.put(`/${post._id}/${loggedInUser?._id}/like`)
+         const res = await getPosts.put(`/${post._id}/${loggedInUserId}/like`)
 
       }catch(error){
          console.log(error)
@@ -56,7 +56,7 @@ const Posts = ({post, error}) => {
 
    const deletePost = async(postId) => {
       try{
-         await getPosts.delete(`/${loggedInUser?._id}/${postId}`)
+         await getPosts.delete(`/${loggedInUserId}/${postId}`)
          setNewPosts(Date.now())
       }
       catch(error){
@@ -109,7 +109,7 @@ const Posts = ({post, error}) => {
             <div className="postTopRight">
                <MoreVert className={confirmDelete ? 'none' : ''} onClick={() => setOpen(prev => !prev)} style={{cursor: 'pointer'}}/>
                {open && (
-                  loggedInUser?._id === post?.userId ? 
+                  loggedInUserId === post?.userId ? 
                   <button 
                      className={confirmDelete ? 'none' : ''}
                      onClick={() => setConfirmDelete(prev => !prev)}>Delete</button> : null )

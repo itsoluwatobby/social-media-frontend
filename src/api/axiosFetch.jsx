@@ -7,7 +7,8 @@ const MESSAGE_URL = 'http://localhost:5000/api/message';
 
 
 export const authUsers = axios.create({
-   baseURL: AUTH_URL
+   baseURL: AUTH_URL,
+   headers: {'Content-Type': 'application/json'}
 })
 
 export const fetchUsers = axios.create({
@@ -26,3 +27,8 @@ export const messageUrl = axios.create({
    baseURL: MESSAGE_URL,
 })
 
+export const axiosPrivate = axios.create({
+   baseURL: 'http://localhost:5000/api',
+   headers: { 'Content-Type': 'application/json' },
+   withCredentials: true
+})

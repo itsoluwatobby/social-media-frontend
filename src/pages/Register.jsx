@@ -3,7 +3,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaTimes, FaCheck, FaInfoCircle } from 'react-icons/fa';
-import { authUsers } from "../../api/axiosFetch";
+import { authUsers } from "../api/axiosFetch";
 
 const USER_REGEX = /^[A-Za-z][A-Za-z0-9_]{4,25}$/
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{7,24}$/
@@ -55,16 +55,9 @@ const Register = () => {
       e.preventDefault()
       setLoading(true)
       try{
-         const name = USER_REGEX.test(username)
-         const pass = PASSWORD_REGEX.test(password)
-         const email = email.includes('@')
-         if(name && pass && email){
-            const response = await authUsers.post('/register', 
-            {username, email, password})
-            setSuccess(true)
-            navigate('/login')
-         }
-         else setError('Inputs are not valid')
+         await authUsers.post('/register', {username, email, password})
+         setSuccess(true)
+         navigate('/login')
       } 
       catch(error){
          setSuccess(false)

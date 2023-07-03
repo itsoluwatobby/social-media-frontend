@@ -5,11 +5,11 @@ import Message from '../components/Message';
 import {AiOutlineSend} from 'react-icons/ai'
 import ChatOnline from '../components/ChatOnline';
 import useContextAuth from '../UserContext/useContextAuth'
-import { conversationUrl, messageUrl } from '../../api/axiosFetch';
+import { conversationUrl, messageUrl } from '../api/axiosFetch';
 import {io} from 'socket.io-client';
 
 const Messenger = () => {
-   const {loggedInUser} = useContextAuth();
+   const {loggedInUserId, users} = useContextAuth();
    const [error, setError] = useState('');
    const [loading, setLoading] = useState(false);
    const [conversations, setConversations] = useState([]);
@@ -20,18 +20,18 @@ const Messenger = () => {
    const socket = useRef(io('ws://localhost:8990'))
 
    useEffect(() => {
-     socket.current.emit('addUser', loggedInUser?._id)
+     socket.current.emit('addUser', loggedInUserId)
      socket.current.on('getUsers', users => {
       console.log(users)
      })
-   }, [loggedInUser])
+   }, [loggedInUserId])
 
 
    useEffect(() => {
       const getConversations = async() => {
          setLoading(true)
          try{
-            const response = await conversationUrl(`/${loggedInUser?._id}`)
+            const response = await conversationUrl(`/${loggedInUserId}`)
             setConversations(response?.data)
          }
          catch(error){
@@ -46,7 +46,7 @@ const Messenger = () => {
       }
       getConversations()
 
-   }, [loggedInUser])
+   }, [loggedInUserId])
 
    useEffect(() => {
     
@@ -71,7 +71,7 @@ const Messenger = () => {
       e.preventDefault()
       const message = {
          conversationId: currentChat._id,
-         sender: loggedInUser._id,
+         sender: loggedInUserId,
          text: newMessage
       }
       try{
@@ -91,10 +91,10 @@ const Messenger = () => {
             <div className="chatMenuWrapper">
                <input type="text" placeholder='search for friends' className="chatMenuInput" />
                {conversations.map(conversation => (
-                     <div key={conversation._id} onClick={() => setCurrentChat(conversation)}>
+                     <div key={conversation?._id} onClick={() => setCurrentChat(conversation)}>
                         <Conversation  
                            conversation={conversation}
-                           loggedInUser={loggedInUser}   
+                           loggedInUser={users?.userData}   
                         />
                      </div>
                   ))
@@ -110,7 +110,7 @@ const Messenger = () => {
                            {messages ? 
                               messages.map(message => (
                                  <div ref={scrollRef}>
-                                    <Message key={message._id} message={message} own={message?.sender === loggedInUser?._id ? true : ''}/>
+                                    <Message key={message?._id} message={message} own={message?.sender === loggedInUserId ? true : ''}/>
                                  </div>
                               )): <p>{error}</p>
                            }

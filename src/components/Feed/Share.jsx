@@ -4,11 +4,12 @@ import { CgProfile } from 'react-icons/cg';
 import { FaTimes, FaTimesCircle } from 'react-icons/fa';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
-import { getPosts } from '../../../api/axiosFetch';
+import { getPosts } from '../../api/axiosFetch';
+import { useRefreshToken } from '../../hooks/useRefreshToken';
 import useContextAuth from '../../UserContext/useContextAuth';
 
 const Share = () => {
-   const {loggedInUser, setNewPosts} = useContextAuth();
+   const {loggedInUserId, users, setNewPosts} = useContextAuth();
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('')
    const [desc, setDesc] = useState('')
@@ -20,7 +21,7 @@ const Share = () => {
       try{
          if(desc !== '' && !photo){
             setLoading(true)
-            const newPost = {userId: loggedInUser._id, desc}
+            const newPost = {userId: loggedInUserId, desc}
             const res = await getPosts.post('/', newPost)
             setNewPosts(res.data)
             setDesc('')
@@ -28,11 +29,11 @@ const Share = () => {
          }
          else {
             setLoading(true)
-            const newPost = {userId: loggedInUser._id, desc, img: photo}
+            const newPost = {userId: loggedInUserId, desc, img: photo}
             const data = new FormData()
             const filename = Date.now() + photo.name;
             data.append("img", filename)
-            data.append("userId", loggedInUser._id)
+            data.append("userId", loggedInUserId)
             data.append("desc", desc)
           
             const res = await getPosts.post('/', data, {
@@ -49,16 +50,16 @@ const Share = () => {
          setLoading(false)
       }
    }
-
+  
    const canSubmit = Boolean(desc)
     
    return (
     <Container> 
       <div className="shareWrapper">
          <div className="shareTop">
-            <Link to={`/profile/${loggedInUser?.username}`} className='links'>
-            {loggedInUser?.profilePicture ?  (
-               <img src={loggedInUser?.profilePicture} alt="profile picture" className="shareProfileImg" />
+            <Link to={`/profile/${users?.userData?.username}`} className='links'>
+            {users?.userData?.profilePicture ?  (
+               <img src={users?.userData?.profilePicture} alt="profile picture" className="shareProfileImg" />
                ) : ( <CgProfile style={{fontSize: '32px', marginRight: '1rem', cursor: 'pointer'}}/> )
             }
             </Link>
@@ -69,7 +70,7 @@ const Share = () => {
                maxLength={150}
                required
                onKeyDown={e => e.key === 'Enter' && submitPosts(e)}
-               placeholder={`Whats on your mind ${loggedInUser?.username}`}
+               placeholder={`Whats on your mind ${users?.userData?.username}`}
                onChange={(e) => setDesc(e.target.value)}
             />
          </div>

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getPosts } from '../../api/axiosFetch';
+import { getPosts } from '../api/axiosFetch';
 
 const initialState = {
    loading: false,

@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 const Topbar = () => {
    const [show, setShow] = useState(false);
    const {pathname} = useLocation();
-   const {loggedInUser, reveal, setReveal, setRightBar, handleLogout, search, setSearch, searchResults, setLeftBar} = useContextAuth();
+   const {loggedInUserId, users, reveal, setReveal, setRightBar, handleLogout, search, setSearch, searchResults, setLeftBar} = useContextAuth();
    //console.log(pathname.split('/')[1])
   
    let optionContainer = (
@@ -18,7 +18,7 @@ const Topbar = () => {
          <div style={optionsList}>
             <p style={links} className='hovers'><Link to='/' className='links'>Home</Link></p>
             <p style={links} className='hovers'><Link className='links'>Mode</Link></p>
-            <p style={links} className='hovers'><Link to={`/profile/${loggedInUser?.username}`} className='links'>Profile</Link></p>
+            <p style={links} className='hovers'><Link to={`/profile/${users?.userData?.username}`} className='links'>Profile</Link></p>
             <p style={links} className='hovers logout' onClick={handleLogout}>Logout</p>
          </div>
       </div>
@@ -118,8 +118,8 @@ const Topbar = () => {
                </div>
             </div>
             <div style={{position: 'relative', transition:'all 0.25s ease-in-out'}}>
-               {loggedInUser?.profilePicture ?
-               <img src={loggedInUser.profilePicture} alt="profile" className="topbarImg" onClick={() => setShow(prev => !prev)}/> : <CgProfile 
+               {users?.userData?.profilePicture ?
+               <img src={users?.userData?.profilePicture} alt="profile" className="topbarImg" onClick={() => setShow(prev => !prev)}/> : <CgProfile 
                               style={{fontSize: '28px', cursor: 'pointer'}}
                               onClick={() => setShow(prev => !prev)}   
                            />
